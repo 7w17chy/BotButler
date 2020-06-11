@@ -27,6 +27,7 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 
+    // library that handles discord api requests for us
     compile ('net.dv8tion:JDA:4.1.1_162') {
         exclude module: 'opus-java'
     }
@@ -34,5 +35,5 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'de.m_n_n.bot_butler.App'
+    mainClassName = 'de.m_n_n.bot_butler.Main'
 }
