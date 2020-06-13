@@ -7,9 +7,12 @@ public class Job extends Thread {
 
 	@Override
 	public void run() {
-		for (;;) {
-			System.out.print(".");
-		}
+		// increment cursor and check for new
+		// if new 
+		//   execute 
+		//   continue (in that case we want to immediatly check for a new entry)
+		// sleep one millisecond
+		// goto 1
 	}
 
 	public interface Executable {
@@ -18,9 +21,11 @@ public class Job extends Thread {
 
 	public static class ExecuteResult {
 		private Sendable m_result;
+		public boolean m_success;
 
-		ExecuteResult(Sendable result) {
+		ExecuteResult(Sendable result, boolean success) {
 			m_result = result;
+			m_success = success;
 		}
 	}
 }

@@ -16,7 +16,26 @@ protected class Queue {
 		cursor = new Cursor(0);
 	}
 
-	public void add(Job job) {}
+	public void add<T extends Executable>(T job) {
+		int next_free = cursor.getFree();
+		if (next_free) {
+			jobs.set(next_free, new QueueElement(job));
+			return;
+		}
+		
+		// there's no free element
+		jobs.push(new QueueElement(job));
+	}
+
+	public int nextFree() {
+		for (int i = 0; i < jobs.size(); i++) {
+			if (jobs.elementAt(i).occupied == Occupied.FREE)
+				return i;
+		}
+
+		// no free element available, maybe extend list?
+		return -1;
+	}
 
 	private enum Occupied {
 		OCCUPIED,
@@ -50,14 +69,8 @@ protected class Queue {
 		}
 
 		// get the index of the next free element
-		public int nextFree() {
-			for (int i = 0; i < super.jobs.size(); i++) {
-				if (super.jobs.elementAt(i).occupied == Occupied.FREE)
-					return i;
-			}
-
-			// no free element available, maybe extend list?
-			return -1;
+		public void increment() {
+			m_index++;
 		}
 	}
 }
