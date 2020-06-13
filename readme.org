@@ -1,0 +1,21 @@
+#+TITLE: README
+
+* Features [0%]
+- [ ] API-Requests
+- [ ] Abstimmungen
+* Ideen zur Umsetzung/Implementierung
+** Application flow
+1. Command kommt rein
+2. Api Request? -> anderer Thread
+   - anderer thread hat eine queue
+3. Thread macht api request -> ergebnis wird an weiteren thread gesendet
+4. response thread sendet response zu discord
+** Job queue
+Abarbeitung von requests: Request queue:
+
+0 1 2 3 4 5 6 7 8 9
+
+Neue Requests werden von 0->9 gepusht, und auch so abgearbeitet.
+Ist die queue voll aber der "Cursor" noch nicht bei 9, werden die neuen
+Requests einfach wieder von 0->"Cursor"-Position aufgefuellt. Ist dieser
+Buffer ebenfalls voll, wird ein neuer erstellt.

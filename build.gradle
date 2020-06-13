@@ -18,6 +18,8 @@ repositories {
     // Use jcenter for resolving dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    // maybe?
+    mavenCentral()
 }
 
 dependencies {
@@ -31,6 +33,9 @@ dependencies {
     compile ('net.dv8tion:JDA:4.1.1_162') {
         exclude module: 'opus-java'
     }
+
+    // json library
+    compile group: 'org.json', name: 'json', version: '20180813'
 }
 
 application {
