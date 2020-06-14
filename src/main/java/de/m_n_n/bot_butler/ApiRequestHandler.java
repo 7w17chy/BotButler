@@ -5,42 +5,40 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.json.JSONObject;
 
-public class ApiRequestHandler {
+public class ApiRequestHandler implements Job.Executable {
     private ApiRequest m_req;
 
     ApiRequestHandler(String url, HashMap<String, String> params) {
-        m_req = new ApiReqest(url, params);
+        m_req = new ApiRequest(url, params);
     }
 
     ApiRequestHandler(String url) {
         m_req = new ApiRequest(url, null);
     }
 
-    private JsonObject apiRequest() {
-        String result = null;
-        try {
-            InputStream stream = m_req.openStream();
-            // vorsicht ist die Mutter der Porzellankiste
-            byte[] bytes = new byte[stream.available() * 2];
-            stream.read(bytes);
-            result = new String(arr, StandardCharsets.UTF_8);
-            stream.close();
-        } catch (IOException e) {
-            // we've got a problem
-            e.printStackTrace();
-        }
+    private JSONObject apiRequest() throws IOException {
+		InputStream stream = m_req.getUrl().openStream();
+		// vorsicht ist die Mutter der Porzellankiste
+		byte[] bytes = new byte[stream.available() * 2];
+		stream.read(bytes);
+		String result = new String(bytes, StandardCharsets.UTF_8);
+		stream.close();
         return new JSONObject((result == "" || result == null) ? "{requestex:\"error!\"}" : result);
     }
 
-    public String getSendableContent(Sendable send) {
-        JsonObject req = apiRequest();
-        return send.getSendable(req);
-    }
+	public Job.ExecuteResult execute() {
+		JSONObject res = null;
+		try {
+			res = apiRequest();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Job.ExecuteResult(null, false);
+		}
 
-    public interface Sendable {
-        public String getSendable(JsonObject json);
-    }
+		return new Job.ExecuteResult(res, true);
+	}
 }

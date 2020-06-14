@@ -2,7 +2,7 @@ package de.m_n_n.bot_butler;
 
 import java.util.Vector;
 
-protected class Queue {
+class Queue {
 	private Vector<QueueElement> jobs;
 	private Cursor cursor;
 
@@ -16,15 +16,15 @@ protected class Queue {
 		cursor = new Cursor(0);
 	}
 
-	public void add<T extends Executable>(T job) {
-		int next_free = cursor.getFree();
-		if (next_free) {
+	public void add(Job.Executable job) {
+		int next_free = nextFree();
+		if (next_free >= 0) {
 			jobs.set(next_free, new QueueElement(job));
 			return;
 		}
 		
 		// there's no free element
-		jobs.push(new QueueElement(job));
+		jobs.add(new QueueElement(job));
 	}
 
 	public int nextFree() {
@@ -37,16 +37,20 @@ protected class Queue {
 		return -1;
 	}
 
+	public QueueElement next() {
+		return jobs.elementAt(cursor.increment());
+	}
+
 	private enum Occupied {
 		OCCUPIED,
 		FREE	
 	}
 
-	private static class QueueElement<T extends Executable> {
+	private static class QueueElement {
 		public Occupied occupied;
-		private T element;
+		private Job.Executable element;
 
-		QueueElement(T job) {
+		QueueElement(Job.Executable job) {
 			element = job;
 			occupied = Occupied.OCCUPIED;
 		}
@@ -68,9 +72,14 @@ protected class Queue {
 			m_index = 0;
 		}
 
-		// get the index of the next free element
-		public void increment() {
+		public int increment() {
+			if ((m_index + 1) >= super.jobs.size()) {
+				m_index = 0;
+				return m_index;
+			}
+
 			m_index++;
+			return m_index;
 		}
 	}
 }

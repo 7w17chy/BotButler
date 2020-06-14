@@ -19,11 +19,11 @@ public class Job extends Thread {
 		public ExecuteResult execute();
 	}
 
-	public static class ExecuteResult {
-		private Sendable m_result;
+	public static class ExecuteResult<T extends Sendable> {
+		private T m_result;
 		public boolean m_success;
 
-		ExecuteResult(Sendable result, boolean success) {
+		ExecuteResult(T result, boolean success) {
 			m_result = result;
 			m_success = success;
 		}
