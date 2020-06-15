@@ -41,12 +41,23 @@ class Queue {
 		return jobs.elementAt(cursor.increment());
 	}
 
+	public QueueElement nextJob() {
+		for (int i = 0; i < jobs.size(); i++) {
+			if (jobs.elementAt(i).occupied == Occupied.OCCUPIED) {
+				jobs.elementAt(i).markDone();
+				return jobs.elementAt(i);
+			}
+		}
+
+		return null;
+	}
+
 	private enum Occupied {
 		OCCUPIED,
 		FREE	
 	}
 
-	private static class QueueElement {
+	public static class QueueElement {
 		public Occupied occupied;
 		private Job.Executable element;
 
@@ -57,6 +68,10 @@ class Queue {
 
 		public void markDone() {
 			occupied = Occupied.FREE;
+		}
+
+		public boolean isOccupied() {
+			return (occupied == Occupied.FREE) ? false : true;
 		}
 	}
 
