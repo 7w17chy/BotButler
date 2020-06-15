@@ -20,12 +20,13 @@ public class Job extends Thread {
 		while (true) {
 			Queue.QueueElement next = m_jobQueue.next();
 			if (next.isOccupied()) {
-				ExecuteResult result = next.execute();
+				ExecuteResult result = next.getElement().execute();
+				next.markDone();
 				// TODO: send to send-thread
 				continue;
 			}
 			// sleep one millisecond
-			Thread.sleep(1000);
+			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 		} 
 	}
 
@@ -33,13 +34,9 @@ public class Job extends Thread {
 		public ExecuteResult execute();
 	}
 
-	public static class ExecuteResult<T extends Sendable> {
-		private T m_result;
-		public boolean m_success;
+	public static abstract class ExecuteResult {
+		private boolean m_success;
 
-		ExecuteResult(T result, boolean success) {
-			m_result = result;
-			m_success = success;
-		}
+		public abstract boolean didSucceed();
 	}
 }

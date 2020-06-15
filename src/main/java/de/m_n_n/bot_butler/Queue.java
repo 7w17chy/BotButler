@@ -70,6 +70,10 @@ class Queue {
 			occupied = Occupied.FREE;
 		}
 
+		public Job.Executable getElement() {
+			return element;
+		}
+
 		public boolean isOccupied() {
 			return (occupied == Occupied.FREE) ? false : true;
 		}

@@ -2,6 +2,9 @@ package de.m_n_n.bot_butler;
 
 import java.util.HashMap;
 import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
 
@@ -9,23 +12,24 @@ public class API {
 	public static class ApiRequest {
 		private URL m_url;
 		private HashMap<String, String> m_reqParams;
-		private Parseable m_parser;
+		private Sendable.Parseable m_parser;
 		private int m_channel_id;
 
 		ApiRequest(String url, HashMap<String, String> req_params, Sendable.Parseable parser) {
-			m_url = new URL(url);
+			try { m_url = new URL(url); } catch (Exception e) { e.printStackTrace(); }
+			
 			m_reqParams = new HashMap<String, String>();
 			m_parser = parser;
 		}
 
 		ApiRequest(String url, Sendable.Parseable parser) {
-			m_url = new URL(url);
+			try { m_url = new URL(url); } catch (Exception e) { e.printStackTrace(); }
 			m_reqParams = null;
 			m_parser = parser;
 		}
 
 		public String parse() {
-			m_parser.parse();
+			return m_parser.parse();
 		}
 
 		public URL getUrl() {
@@ -37,17 +41,19 @@ public class API {
 		}
 	}
 
-	public static class ApiResponse extends Sendable {
+	public static class ApiResponse extends Job.ExecuteResult {
 		private JSONObject m_obj;
-		private int m_channel_id;
+		private boolean m_success;
 
-		ApiResponse(JSONObject obj, int channel_id) {
+		ApiResponse(JSONObject obj, boolean success) {
 			m_obj = obj;
-			m_channel_id = channel_id;
+			m_success = success;
 		}
 
-		public String parse() {
+		public String parse() { return "Henlo"; }
 
+		public boolean didSucceed() {
+			return m_success;
 		}
 	}
 
@@ -78,10 +84,10 @@ public class API {
 				res = apiRequest();
 			} catch (Exception e) {
 				e.printStackTrace();
-				return new Job.ExecuteResult(null, false);
+				return new ApiResponse(res, false);
 			}
 
-			return new Job.ExecuteResult(res, true);
+			return new ApiResponse(res, true);
 		}
 	}
 }
