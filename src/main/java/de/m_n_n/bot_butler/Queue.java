@@ -3,53 +3,57 @@ package de.m_n_n.bot_butler;
 import java.util.Vector;
 
 class Queue {
-	private Vector<QueueElement> jobs;
-	private Cursor cursor;
+	private Vector<QueueElement> m_jobs;
+	private int m_cursor;
 
 	Queue(int vec_size, int cursor_pos) {
-		jobs = new Vector<QueueElement>(vec_size);
-		cursor = new Cursor(cursor_pos);
+		m_jobs = new Vector<QueueElement>(vec_size);
+		int i = 0;
+		m_cursor = 0;
+		while (i < vec_size) {
+			m_jobs.set(i, new QueueElement(null));
+			i++;
+		}
 	}
 
 	Queue() {
-		jobs = new Vector<QueueElement>(10);
-		cursor = new Cursor(0);
-	}
-
-	public void add(Job.Executable job) {
-		int next_free = nextFree();
-		if (next_free >= 0) {
-			jobs.set(next_free, new QueueElement(job));
-			return;
+		m_jobs = new Vector<QueueElement>(10);
+		int i = 0;
+		m_cursor = 0;
+		while (i < 10) {
+			m_jobs.set(i, new QueueElement(null));
+			i++;
 		}
-		
-		// there's no free element
-		jobs.add(new QueueElement(job));
 	}
 
-	public int nextFree() {
-		for (int i = 0; i < jobs.size(); i++) {
-			if (jobs.elementAt(i).occupied == Occupied.FREE)
-				return i;
-		}
-
-		// no free element available, maybe extend list?
-		return -1;
+	public synchronized <T extends Executable> void add(T job) {
+		int free_pos = nextFree();
+		m_jobs.elementAt(free_pos).replace(free_pos, job);
 	}
 
-	public QueueElement next() {
-		return jobs.elementAt(cursor.increment());
+	public synchronized Result execute() {
+		int which = nextOccupied();
+		QueueElement element = m_jobs.elementAt(which);
+		element.markDone();
+		return element.getElement().execute();
 	}
 
-	public QueueElement nextJob() {
-		for (int i = 0; i < jobs.size(); i++) {
-			if (jobs.elementAt(i).occupied == Occupied.OCCUPIED) {
-				jobs.elementAt(i).markDone();
-				return jobs.elementAt(i);
-			}
-		}
+	private int nextFree() {
+		int i = m_cursor++;
+		for (; i != m_cursor && m_jobs.elementAt(i).isOccupied(); i++)
+			if (i == m_jobs.size())
+				i = 0;
 
-		return null;
+		return i;
+	}
+
+	private int nextOccupied() {
+		int i = m_cursor++;
+		for (; i != m_cursor && !(m_jobs.elementAt(i).isOccupied()); i++)
+			if (i == m_jobs.size())
+				i = 0;
+
+		return i;
 	}
 
 	private enum Occupied {
@@ -57,48 +61,52 @@ class Queue {
 		FREE	
 	}
 
-	public static class QueueElement {
-		public Occupied occupied;
-		private Job.Executable element;
+	public static class QueueElement<T extends Executable> {
+		public Occupied m_occupied;
+		private T m_element;
 
-		QueueElement(Job.Executable job) {
-			element = job;
-			occupied = Occupied.OCCUPIED;
+		QueueElement(T job) {
+			m_element = job;
+			m_occupied = Occupied.OCCUPIED;
+		}
+
+		public void replace(int index, T new_job) {
+			m_element = new_job;
+			m_occupied = Occupied.OCCUPIED;
 		}
 
 		public void markDone() {
-			occupied = Occupied.FREE;
+			m_occupied = Occupied.FREE;
 		}
 
-		public Job.Executable getElement() {
-			return element;
+		public T getElement() {
+			return m_element;
 		}
 
 		public boolean isOccupied() {
-			return (occupied == Occupied.FREE) ? false : true;
+			return (m_occupied == Occupied.FREE) ? false : true;
 		}
 	}
 
-	// we need to extend Queue in order to get access to its fields
-	private static class Cursor extends Queue {
-		private int m_index;
+	public static class Result<T> {
+		private T m_res;
+		private boolean m_success;
 
-		Cursor(int index) {
-			m_index = index;
-		}
-		
-		Cursor() {
-			m_index = 0;
+		Result(boolean result, T val) {
+			m_res = val;
+			m_success = result;
 		}
 
-		public int increment() {
-			if ((m_index + 1) >= super.jobs.size()) {
-				m_index = 0;
-				return m_index;
-			}
-
-			m_index++;
-			return m_index;
+		public boolean didSucceed() {
+			return m_success;
 		}
+
+		public T getResVal() {
+			return m_res;
+		}
+	}
+
+	public interface Executable {
+		public Result execute();
 	}
 }

@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import org.json.JSONObject;
 
 public class API {
-	public static class ApiRequest {
+	/*public static class ApiRequest {
 		private URL m_url;
 		private HashMap<String, String> m_reqParams;
 		private Sendable.Parseable m_parser;
@@ -89,5 +89,5 @@ public class API {
 
 			return new ApiResponse(res, true);
 		}
-	}
+	} */
 }
