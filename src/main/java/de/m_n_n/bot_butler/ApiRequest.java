@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
 
-public static class ApiRequest implements Queue.Executable {
+public class ApiRequest implements Queue.Executable {
 	private URL m_req;
 	private Parseable m_parser;
 
