@@ -26,16 +26,40 @@ class Queue {
 		}
 	}
 
-	public synchronized <T extends Executable> void add(T job) {
+	public synchronized <T> void add(T job) {
 		int free_pos = nextFree();
 		m_jobs.elementAt(free_pos).replace(free_pos, job);
 	}
 
-	public synchronized Result execute() {
-		int which = nextOccupied();
-		QueueElement element = m_jobs.elementAt(which);
-		element.markDone();
-		return element.getElement().execute();
+	public synchronized void executeOnFreeElement(Executable ex) {
+		int pos = incrementCursor();
+
+		if (!isOccupiedAt(pos))
+			ex.execute(m_jobs.elementAt(pos));
+	}
+
+	public synchronized void executeOnOccupiedElement(Executable ex) {
+		int pos = incrementCursor();
+
+		if (isOccupiedAt(pos))
+			ex.execute(m_jobs.elementAt(pos));
+	}
+
+	public synchronized void executeOn(int which, Executable ex) {
+		ex.execute(m_jobs.elementAt(which));
+	}
+
+	public int incrementCursor() {
+		int currpos = m_cursor;
+		if (currpos++ > m_jobs.size())
+			m_cursor = 0;
+
+		m_cursor++;
+		return m_cursor;
+	}
+
+	public boolean isOccupiedAt(int i) {
+		return (m_jobs.elementAt(i).isOccupied()) ? true : false;
 	}
 
 	private int nextFree() {
@@ -61,7 +85,7 @@ class Queue {
 		FREE	
 	}
 
-	public static class QueueElement<T extends Executable> {
+	public static class QueueElement<T> {
 		public Occupied m_occupied;
 		private T m_element;
 
@@ -88,25 +112,8 @@ class Queue {
 		}
 	}
 
-	public static class Result<T> {
-		private T m_res;
-		private boolean m_success;
-
-		Result(boolean result, T val) {
-			m_res = val;
-			m_success = result;
-		}
-
-		public boolean didSucceed() {
-			return m_success;
-		}
-
-		public T getResVal() {
-			return m_res;
-		}
-	}
-
+	@FunctionalInterface
 	public interface Executable {
-		public Result execute();
+		public void execute(QueueElement element);
 	}
 }

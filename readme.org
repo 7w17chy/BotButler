@@ -1,6 +1,7 @@
 #+TITLE: README
 
 * Queue muss executen -> synchronized methods
+* Make Queue generic over some type
 * Features [0%]
 - [ ] API-Requests
 - [ ] Abstimmungen

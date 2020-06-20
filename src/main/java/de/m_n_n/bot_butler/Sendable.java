@@ -1,11 +1,8 @@
 package de.m_n_n.bot_butler;
 
+import net.dv8tion.jda.api.entities.MessageChannel;
+
 public abstract class Sendable {
-	private int m_channel_id;
-
-	public abstract String parse();
-
-	public interface Parseable {
-		public String parse();
-	}
+	MessageChannel m_channel;
+	public abstract String getSendableContent();
 }

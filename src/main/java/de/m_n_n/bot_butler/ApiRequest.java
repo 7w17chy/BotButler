@@ -7,9 +7,12 @@ import java.nio.charset.StandardCharsets;
 
 import org.json.JSONObject;
 
-public class ApiRequest implements Queue.Executable {
+import net.dv8tion.jda.api.entities.MessageChannel;
+
+public class ApiRequest {
 	private URL m_req;
 	private Parseable m_parser;
+	private MessageChannel m_channel;
 
 	private JSONObject apiRequest() throws IOException {
 		InputStream stream = m_req.openStream();
@@ -21,20 +24,34 @@ public class ApiRequest implements Queue.Executable {
 		return new JSONObject((result == "" || result == null) ? "{requestex:\"error!\"}" : result);
 	}
 
-	public Queue.Result<String> execute() {
+	public ApiResponse executeRequest() {
 		String res = null;
 		try {
 			JSONObject obj = apiRequest();
 			res = m_parser.parse(obj);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Queue.Result(false, res);
+			return new ApiResponse(m_channel, null);
 		}
 
-		return new Queue.Result(true, res);
+		return new ApiResponse(m_channel, res);
 	}
 
 	public interface Parseable {
 		public String parse(JSONObject obj);
+	}
+
+	public class ApiResponse extends Sendable {
+		private MessageChannel m_channel;
+		private String m_content;
+
+		ApiResponse(MessageChannel msgc, String content) {
+			m_channel = msgc;
+			m_content = content;
+		}
+
+		public String getSendableContent() {
+			return m_content;
+		}
 	}
 }
