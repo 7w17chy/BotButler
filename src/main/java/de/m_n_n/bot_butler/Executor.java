@@ -25,14 +25,17 @@ public class Executor extends Thread {
 						resp = req.executeRequest();
 					}
 
-					m_sendQueue.add(resp);
 					elem.markDone();
+					m_sendQueue.add(resp);
 				});
 
+				// we just handeled a job. we should check whether a new one came
+				// in meanwhile
 				continue;
 			}
 
+			// erro handling
 			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
-		} 
+		}
 	}
 }

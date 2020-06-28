@@ -1,0 +1,2 @@
+de/m_n_n/bot_butler/AppTest.java
+ de.m_n_n.bot_butler.AppTest

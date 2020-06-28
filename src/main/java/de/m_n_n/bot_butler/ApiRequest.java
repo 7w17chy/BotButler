@@ -21,7 +21,11 @@ public class ApiRequest {
 		stream.read(bytes);
 		String result = new String(bytes, StandardCharsets.UTF_8);
 		stream.close();
-		return new JSONObject((result == "" || result == null) ? "{requestex:\"error!\"}" : result);
+
+		if (result == "" || result == null)
+			throw new IOException(result);
+
+		return new JSONObject(result);
 	}
 
 	public ApiResponse executeRequest() {
