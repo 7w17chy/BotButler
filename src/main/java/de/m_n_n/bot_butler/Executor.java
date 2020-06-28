@@ -23,7 +23,7 @@ public class Executor extends Thread {
 					if (elem.getElement() instanceof ApiRequest) {
 						ApiRequest req = (ApiRequest) elem.getElement();
 						resp = req.executeRequest();
-					}
+					} /* else if (elem.getElement() instanceof Poll) {...} */
 
 					elem.markDone();
 					m_sendQueue.add(resp);

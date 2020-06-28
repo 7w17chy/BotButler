@@ -1,6 +1,7 @@
 package de.m_n_n.bot_butler;
 
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,17 @@ public class ApiRequest {
 	private URL m_req;
 	private Parseable m_parser;
 	private MessageChannel m_channel;
+
+	ApiRequest(String url, MessageChannel channel, Parseable parser) {
+		try { m_req = new URL(url); }
+		catch (MalformedURLException e) {
+			e.printStackTrace();
+			m_req = null;
+		}
+
+		m_channel = channel;
+		m_parser = parser;
+	}
 
 	private JSONObject apiRequest() throws IOException {
 		InputStream stream = m_req.openStream();
@@ -41,6 +53,7 @@ public class ApiRequest {
 		return new ApiResponse(m_channel, res);
 	}
 
+	@FunctionalInterface
 	public interface Parseable {
 		public String parse(JSONObject obj);
 	}

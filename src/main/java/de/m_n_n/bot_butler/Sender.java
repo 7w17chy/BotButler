@@ -16,11 +16,10 @@ public class Sender extends Thread {
 			pos = m_sendQueue.incrementCursor();
 			if (m_sendQueue.isOccupiedAt(pos)) {
 				m_sendQueue.executeOn(pos, (elem) -> {
-
 					if (elem.getElement() instanceof Sendable) {
 						Sendable send = (Sendable) elem.getElement();
 						String send_val = send.getSendableContent();
-						// TODO: actually send to discord
+						send.m_channel.sendMessage(send_val);
 					}
 
 					elem.markDone();
@@ -30,6 +29,6 @@ public class Sender extends Thread {
 			}
 
 			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
-		} 
+		}
 	}
 }
