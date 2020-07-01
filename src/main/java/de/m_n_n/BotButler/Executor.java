@@ -11,7 +11,7 @@ public class Executor extends Thread {
 		m_sendQueue = send;
 	}
 
-	@Override
+	/*@Override
 	public void run() {
 		int pos = -1;
 		while (true) {
@@ -23,7 +23,7 @@ public class Executor extends Thread {
 					if (elem.getElement() instanceof ApiRequest) {
 						ApiRequest req = (ApiRequest) elem.getElement();
 						resp = req.executeRequest();
-					} /* else if (elem.getElement() instanceof Poll) {...} */
+					} // else if (elem.getElement() instanceof Poll) {...}
 
 					elem.markDone();
 					m_sendQueue.add(resp);
@@ -36,6 +36,30 @@ public class Executor extends Thread {
 
 			// error handling
 			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+		}
+	} */
+	
+	@Override
+	public void run() {
+		int pos = 0;
+		while (true) {
+			while (!(m_jobQueue.isOccupiedAt(pos)))
+				try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+			
+			do {
+				m_jobQueue.executeOn(pos, (elem) -> {
+					ApiRequest.ApiResponse resp = null;
+					if (elem.getElement() instanceof ApiRequest) {
+						ApiRequest req = (ApiRequest) elem.getElement();
+						resp = req.executeRequest();
+					} // else if (elem.getElement() instanceof Poll) {...}
+
+					elem.markDone();
+					m_sendQueue.add(resp);
+				});
+				pos = m_jobQueue.incrementCursor();
+			} while (m_jobQueue.isOccupiedAt(pos));
+			pos = 0;
 		}
 	}
 }
