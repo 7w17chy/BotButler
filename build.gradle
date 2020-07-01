@@ -40,5 +40,5 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'de.m_n_n.bot_butler.Main'
+    mainClassName = 'de.m_n_n.BotButler.Main'
 }

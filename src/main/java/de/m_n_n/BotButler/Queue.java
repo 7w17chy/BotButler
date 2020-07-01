@@ -1,4 +1,4 @@
-package de.m_n_n.bot_butler;
+package de.m_n_n.BotButler;
 
 import java.util.Vector;
 
@@ -7,23 +7,19 @@ class Queue {
 	private int m_cursor;
 
 	Queue(int vec_size, int cursor_pos) {
-		m_jobs = new Vector<QueueElement>(vec_size);
-		int i = 0;
+		m_jobs = new Vector<QueueElement>(vec_size, vec_size);
 		m_cursor = 0;
-		while (i < vec_size) {
-			m_jobs.set(i, new QueueElement(null));
-			i++;
-		}
+		
+		for (int i = 0; i < vec_size; i++)
+			m_jobs.add(new QueueElement(null));
 	}
 
 	Queue() {
-		m_jobs = new Vector<QueueElement>(10);
-		int i = 0;
+		m_jobs = new Vector<QueueElement>(10, 10);
 		m_cursor = 0;
-		while (i < 10) {
-			m_jobs.set(i, new QueueElement(null));
-			i++;
-		}
+		
+		for (int i = 0; i < 10; i++)
+			m_jobs.add(new QueueElement(null));
 	}
 
 	public synchronized <T> void add(T job) {
@@ -46,12 +42,17 @@ class Queue {
 	}
 
 	public synchronized void executeOn(int which, Executable ex) {
+		if (which >= m_jobs.size() || which < 0) {
+			System.out.println("Which in function executeOn is out of bounds: " + which);
+			return;
+		}
+		
 		ex.execute(m_jobs.elementAt(which));
 	}
 
-	public int incrementCursor() {
-		int currpos = m_cursor;
-		if (currpos++ > m_jobs.size())
+	public synchronized int incrementCursor() {
+		int nextpos = m_cursor + 1;
+		if (nextpos >= m_jobs.size())
 			m_cursor = 0;
 
 		m_cursor++;
@@ -62,8 +63,8 @@ class Queue {
 		return (m_jobs.elementAt(i).isOccupied()) ? true : false;
 	}
 
-	private int nextFree() {
-		int i = m_cursor++;
+	private synchronized int nextFree() {
+		int i = ((m_cursor + 1) >= m_jobs.size()) ? 0 : ++m_cursor;
 		for (; i != m_cursor && m_jobs.elementAt(i).isOccupied(); i++)
 			if (i == m_jobs.size())
 				i = 0;
@@ -71,12 +72,12 @@ class Queue {
 		return i;
 	}
 
-	private int nextOccupied() {
-		int i = m_cursor++;
+	private synchronized int nextOccupied() {
+		int i = ((m_cursor + 1) > m_jobs.size()) ? 0 : m_cursor++;
 		for (; i != m_cursor && !(m_jobs.elementAt(i).isOccupied()); i++)
 			if (i == m_jobs.size())
 				i = 0;
-
+		
 		return i;
 	}
 

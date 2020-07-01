@@ -1,4 +1,4 @@
-package de.m_n_n.bot_butler;
+package de.m_n_n.BotButler;
 
 import java.lang.Thread;
 
@@ -34,7 +34,7 @@ public class Executor extends Thread {
 				continue;
 			}
 
-			// erro handling
+			// error handling
 			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 		}
 	}

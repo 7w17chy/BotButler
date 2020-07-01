@@ -1,4 +1,4 @@
-package de.m_n_n.bot_butler;
+package de.m_n_n.BotButler;
 
 import java.lang.Thread;
 
