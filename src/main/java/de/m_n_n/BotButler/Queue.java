@@ -24,6 +24,7 @@ class Queue {
 
 	public synchronized <T> void add(T job) {
 		int free_pos = nextFree();
+		System.out.println("Adding new element at index " + free_pos);
 		m_jobs.elementAt(free_pos).replace(free_pos, job);
 	}
 
@@ -64,16 +65,21 @@ class Queue {
 	}
 
 	private synchronized int nextFree() {
-		int i = ((m_cursor + 1) >= m_jobs.size()) ? 0 : ++m_cursor;
-		for (; i != m_cursor && m_jobs.elementAt(i).isOccupied(); i++)
-			if (i == m_jobs.size())
+		int i = 0;
+		do {
+			if (!m_jobs.elementAt(i).isOccupied())
+				return i;
+			
+			i++;
+			if (i >= m_jobs.size())
 				i = 0;
+		} while (i != m_cursor);
 
 		return i;
 	}
 
 	private synchronized int nextOccupied() {
-		int i = ((m_cursor + 1) > m_jobs.size()) ? 0 : m_cursor++;
+		int i = ((m_cursor + 1) > m_jobs.size()) ? 0 : m_cursor;
 		for (; i != m_cursor && !(m_jobs.elementAt(i).isOccupied()); i++)
 			if (i == m_jobs.size())
 				i = 0;

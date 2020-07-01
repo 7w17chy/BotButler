@@ -17,11 +17,14 @@ public class Executor extends Thread {
 		int pos = 0;
 		while (true) {
 			// wait until new job comes in
-			while (!(m_jobQueue.isOccupiedAt(pos)))
+			while (!(m_jobQueue.isOccupiedAt(pos))) {
+				System.out.println("Waiting at index " + pos);
 				try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+			}
 			
 			// if a new job came in, execute it and check whether new ones came in after it (they'll take the following positions
 			do {
+				System.out.println("Executing request at index " + pos);
 				m_jobQueue.executeOn(pos, (elem) -> {
 					ApiRequest.ApiResponse resp = null;
 					if (elem.getElement() instanceof ApiRequest) {

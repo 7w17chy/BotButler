@@ -20,12 +20,23 @@ public class MessageHandler extends ListenerAdapter {
         
         switch (message_content) {
             case "!meme":
-                m_jobs.add(new ApiRequest("memeurl", event.getChannel(), (obj) -> {
-                    return new String("Got obj: " + obj.toString());
+            	System.out.println("Got new meme request");
+                m_jobs.add(new ApiRequest("https://meme-api.herokuapp.com/gimme", event.getChannel(), (obj) -> {
+                	String ret = null;
+                    try {
+                    	ret = obj.getString("postLink");
+                    	System.out.println("Got object: " + ret);
+                    } catch (Exception e) {
+                    	e.printStackTrace();
+                    	ret = "Klitzekleiner Fehler beim Parsen der Server-Response. Nicht deine Schuld. Sag bitte mal Max bescheid :)";
+                    }
+                    
+                    return ret;
                 }));
                 break;
             case "!hello":
-            	event.getChannel().sendMessage("Hallo!").queue();
+            	event.getChannel().sendMessage("Hello!").queue();
+            	System.out.println("Hello, world!");
             	break;
             default:
                 if (message_content.startsWith("!"))

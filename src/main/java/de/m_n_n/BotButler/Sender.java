@@ -18,6 +18,7 @@ public class Sender extends Thread {
 			
 			do {
 				m_sendQueue.executeOn(pos, (elem) -> {
+					System.out.println("About to send something");
 					if (elem.getElement() instanceof Sendable) {
 						Sendable send = (Sendable) elem.getElement();
 						String send_val = send.getSendableContent();
