@@ -11,41 +11,16 @@ public class Executor extends Thread {
 		m_sendQueue = send;
 	}
 
-	/*@Override
-	public void run() {
-		int pos = -1;
-		while (true) {
-			pos = m_jobQueue.incrementCursor();
-			if (m_jobQueue.isOccupiedAt(pos)) {
-				m_jobQueue.executeOn(pos, (elem) -> {
-					ApiRequest.ApiResponse resp = null;
-
-					if (elem.getElement() instanceof ApiRequest) {
-						ApiRequest req = (ApiRequest) elem.getElement();
-						resp = req.executeRequest();
-					} // else if (elem.getElement() instanceof Poll) {...}
-
-					elem.markDone();
-					m_sendQueue.add(resp);
-				});
-
-				// we just handeled a job. we should check whether a new one came
-				// in meanwhile
-				continue;
-			}
-
-			// error handling
-			try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
-		}
-	} */
-	
 	@Override
 	public void run() {
+		// index in the vector of jobs
 		int pos = 0;
 		while (true) {
+			// wait until new job comes in
 			while (!(m_jobQueue.isOccupiedAt(pos)))
 				try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 			
+			// if a new job came in, execute it and check whether new ones came in after it (they'll take the following positions
 			do {
 				m_jobQueue.executeOn(pos, (elem) -> {
 					ApiRequest.ApiResponse resp = null;
@@ -59,6 +34,8 @@ public class Executor extends Thread {
 				});
 				pos = m_jobQueue.incrementCursor();
 			} while (m_jobQueue.isOccupiedAt(pos));
+			// if all jobs have been executed, we can safely go back to position 0, since that's where the next
+			// job will be put
 			pos = 0;
 		}
 	}
