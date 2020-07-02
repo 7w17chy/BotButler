@@ -18,17 +18,10 @@ public class Sender extends Thread {
 			
 			do {
 				m_sendQueue.executeOn(pos, (elem) -> {
-					System.out.println("About to send something");
 					if (elem.getElement() instanceof Sendable) {
-						try {
 						Sendable send = (Sendable) elem.getElement();
 						String send_val = send.getSendableContent();
-						if (send_val != null) 
-							send.getMessageChannel().sendMessage(send_val).queue();
-						else
-							send.getMessageChannel().sendMessage("Irgendwas beim Parsen falsch gelaufen. Nicht deine Schuld. Sag bitte mal Max bescheid :)")
-								.queue();
-						} catch (NullPointerException e) { e.printStackTrace(); return; }
+						send.getMessageChannel().sendMessage(send_val).queue();
 					} // else if (elem instanceof Poll) { ... }
 
 					elem.markDone();
