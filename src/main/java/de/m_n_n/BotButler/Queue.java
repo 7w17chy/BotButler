@@ -48,7 +48,8 @@ class Queue {
 			return;
 		}
 		
-		ex.execute(m_jobs.elementAt(which));
+		//QueueElement elem = m_jobs.elementAt(which);
+		ex.execute(m_jobs.get(which));
 	}
 
 	public synchronized int incrementCursor() {
@@ -78,6 +79,7 @@ class Queue {
 		return i;
 	}
 
+	// TODO: rewrite just as nextFree()
 	private synchronized int nextOccupied() {
 		int i = ((m_cursor + 1) > m_jobs.size()) ? 0 : m_cursor;
 		for (; i != m_cursor && !(m_jobs.elementAt(i).isOccupied()); i++)
@@ -120,7 +122,7 @@ class Queue {
 	}
 
 	@FunctionalInterface
-	public interface Executable {
-		public void execute(QueueElement element);
+	public interface Executable<T> {
+		public void execute(QueueElement<T> element);
 	}
 }

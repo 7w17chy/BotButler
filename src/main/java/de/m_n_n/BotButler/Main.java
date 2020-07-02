@@ -3,7 +3,6 @@ package de.m_n_n.BotButler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 class Main extends ListenerAdapter {
     public static void main(String[] args) {

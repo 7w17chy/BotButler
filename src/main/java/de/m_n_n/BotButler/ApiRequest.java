@@ -70,5 +70,6 @@ public class ApiRequest {
 		public String getSendableContent() {
 			return m_content;
 		}
+		public MessageChannel getMessageChannel() { return m_channel; }
 	}
 }
