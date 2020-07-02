@@ -17,6 +17,7 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'java-library-distribution'
 
+// thanks: https://mkyong.com/gradle/gradle-create-a-jar-file-with-dependencies/
 //create a single Jar with all dependencies
 task fatJar(type: Jar) {
     manifest {
