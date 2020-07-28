@@ -20,7 +20,6 @@ public class MessageHandler extends ListenerAdapter {
         
         switch (message_content) {
             case "!meme":
-            	System.out.println("Got new meme request");
                 m_jobs.add(new ApiRequest("https://meme-api.herokuapp.com/gimme", event.getChannel(), (obj) -> {
                 	String ret = null;
                     try {
@@ -35,12 +34,11 @@ public class MessageHandler extends ListenerAdapter {
                 }));
                 break;
             case "!hello":
-            	event.getChannel().sendMessage("Hello!").queue();
-            	System.out.println("Hello, world!");
+            	event.getChannel().sendMessage("Ei gude, wie?").queue();
             	break;
             default:
                 if (message_content.startsWith("!"))
-                    event.getChannel().sendMessage("Sorry, unknown command!").queue();
+                    event.getChannel().sendMessage("Sorry, den Befehl kenn' ich leider noch nicht...").queue();
         }
     }
 }

@@ -19,7 +19,7 @@ class Main extends ListenerAdapter {
         sender.start();
     	
     	try {
-            JDA jda = new JDABuilder("NjczOTAwODE0MTQ1OTQ1NjIw.Xv3kUA.9qEFSc3m5O3m3NahuFGPnn5MsqY")
+            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.Xv3nhw.lbZduKfmw1qOYxylCcszRYOJVzw")
                 .addEventListeners(new MessageHandler(jobs, sender_queue))
                 .build();
 

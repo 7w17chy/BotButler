@@ -20,7 +20,8 @@ public class Executor extends Thread {
 			while (!(m_jobQueue.isOccupiedAt(pos)))
 				try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 			
-			// if a new job came in, execute it and check whether new ones came in after it (they'll take the following positions
+			// if a new job came in, execute it and check whether new ones came in after it (they'll take the following
+			// positions
 			do {
 				m_jobQueue.executeOn(pos, (elem) -> {
 					ApiRequest.ApiResponse resp = null;
