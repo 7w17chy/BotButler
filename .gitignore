@@ -4,4 +4,4 @@ build/**
 .idea
 .idea/**
 .idea/*
-token.txt
+bot_token.txt

@@ -26,7 +26,7 @@ class Main extends ListenerAdapter {
         MessageHandler handler = new MessageHandler(jobs, sender_queue,
                 new HashMap<String, MessageHandler.MessageReceivedEx>());
     	try {
-    	    File tokenfile = new File("token.txt");
+    	    File tokenfile = new File("bot_token.txt");
     	    Scanner sc = new Scanner(tokenfile);
             JDA jda = new JDABuilder(sc.nextLine())
                 .addEventListeners(handler)
