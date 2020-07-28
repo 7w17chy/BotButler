@@ -5,6 +5,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 
 import java.util.HashMap;
+import java.io.File;
+import java.util.Scanner;
 
 class Main extends ListenerAdapter {
     public static void main(String[] args) {
@@ -24,7 +26,9 @@ class Main extends ListenerAdapter {
         MessageHandler handler = new MessageHandler(jobs, sender_queue,
                 new HashMap<String, MessageHandler.MessageReceivedEx>());
     	try {
-            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.XpmTPA.ngsmAJUIz0522szXi67sNuzOmEM")
+    	    File tokenfile = new File("token.txt");
+    	    Scanner sc = new Scanner(tokenfile);
+            JDA jda = new JDABuilder(sc.nextLine())
                 .addEventListeners(handler)
                 .build();
 
