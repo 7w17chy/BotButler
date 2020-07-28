@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
 
-public class ApiRequest {
+public class ApiRequest implements Queue.Executable {
 	private URL m_req;
 	private Parseable m_parser;
 	private MessageChannel m_channel;
@@ -53,12 +53,18 @@ public class ApiRequest {
 		return new ApiResponse(m_channel, res);
 	}
 
+	// Queue.Executable
+	public void execute(Queue self, Queue other) {
+		ApiResponse resp = executeRequest();
+		other.add(resp);
+	}
+
 	@FunctionalInterface
 	public interface Parseable {
 		public String parse(JSONObject obj);
 	}
 
-	public class ApiResponse extends Sendable {
+	public class ApiResponse extends Sendable implements Queue.Executable {
 		private MessageChannel m_channel;
 		private String m_content;
 
@@ -71,5 +77,9 @@ public class ApiRequest {
 			return m_content;
 		}
 		public MessageChannel getMessageChannel() { return m_channel; }
+
+		public void execute(Queue self, Queue other) {
+			m_channel.sendMessage(getSendableContent()).queue();
+		}
 	}
 }
