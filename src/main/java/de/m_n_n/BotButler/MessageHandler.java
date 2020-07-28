@@ -1,44 +1,39 @@
 package de.m_n_n.BotButler;
 
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import java.util.HashMap;
 
 public class MessageHandler extends ListenerAdapter {
 	
 	private Queue m_jobs;
 	private Queue m_send_queue;
+	private HashMap<String, MessageReceivedEx> m_commands;
 	
-	MessageHandler(Queue jobs, Queue send_queue) {
+	MessageHandler(Queue jobs, Queue send_queue, HashMap<String, MessageReceivedEx> commands) {
 		m_jobs = jobs;
 		m_send_queue = send_queue;
+		m_commands = commands;
 	}
-	
+
+	public interface MessageReceivedEx {
+	    public void execute(MessageReceivedEvent event, Queue jobs, Queue sender);
+    }
+
+	public void addCommand(String command, MessageReceivedEx ex) {
+	    m_commands.put(command, ex);
+    }
+
 	@Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String message_content = event.getMessage().getContentRaw();
-        
-        switch (message_content) {
-            case "!meme":
-                m_jobs.add(new ApiRequest("https://meme-api.herokuapp.com/gimme", event.getChannel(), (obj) -> {
-                	String ret = null;
-                    try {
-                    	ret = obj.getString("postLink");
-                    	System.out.println("Got object: " + ret);
-                    } catch (Exception e) {
-                    	e.printStackTrace();
-                    	ret = "Klitzekleiner Fehler beim Parsen der Server-Response. Nicht deine Schuld. Sag bitte mal Max bescheid :)";
-                    }
-                    
-                    return ret;
-                }));
-                break;
-            case "!hello":
-            	event.getChannel().sendMessage("Ei gude, wie?").queue();
-            	break;
-            default:
-                if (message_content.startsWith("!"))
-                    event.getChannel().sendMessage("Sorry, den Befehl kenn' ich leider noch nicht...").queue();
+        if (m_commands.containsKey(message_content)) {
+            m_commands.get(message_content).execute(event, m_jobs, m_send_queue);
+            return;
         }
+
+        if (message_content.startsWith("!"))
+            event.getChannel().sendMessage("Sorry, den Befehl kenn' ich leider noch nicht...").queue();
     }
 }
