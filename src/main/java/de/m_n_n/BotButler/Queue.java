@@ -7,27 +7,24 @@ import java.util.Optional;
 class Queue {
 	private Vector<Optional<Executable>> m_jobs;
 	private int m_cursor;
-	private Queue m_self;
 	private Queue m_other;
 
 	Queue() {
 		m_jobs = new Vector<Optional<Executable>>(10, 10);
 		m_cursor = 0;
-		m_self = this;
 		m_other = null;
 
 		for (int i = 0; i < 10; i++)
-			m_jobs.set(i, Optional.empty());
+			m_jobs.add(i, Optional.empty());
 	}
 
 	Queue(Queue other) {
 		m_jobs = new Vector<Optional<Executable>>(10, 10);
 		m_cursor = 0;
-		m_self = this;
 		m_other = other;
 
 		for (int i = 0; i < 10; i++)
-			m_jobs.set(i, Optional.empty());
+			m_jobs.add(i, Optional.empty());
 	}
 
 	public interface Executable {
@@ -50,7 +47,7 @@ class Queue {
 		}
 
 		m_jobs.elementAt(which).ifPresent((ex) -> {
-			ex.execute(m_self, m_other);
+			ex.execute(this, m_other);
 		});
 		m_jobs.set(which, Optional.empty());
 	}

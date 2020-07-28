@@ -24,7 +24,7 @@ class Main extends ListenerAdapter {
         MessageHandler handler = new MessageHandler(jobs, sender_queue,
                 new HashMap<String, MessageHandler.MessageReceivedEx>());
     	try {
-            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.XpmTPA.8dPy0Kkgi2pwYpLgnARVGclbdQ8")
+            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.XpmTPA.iTj2pQdaZB-5olCBts3oP4yDYDI")
                 .addEventListeners(handler)
                 .build();
 
