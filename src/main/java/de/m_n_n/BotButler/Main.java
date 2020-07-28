@@ -24,7 +24,7 @@ class Main extends ListenerAdapter {
         MessageHandler handler = new MessageHandler(jobs, sender_queue,
                 new HashMap<String, MessageHandler.MessageReceivedEx>());
     	try {
-            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.XpmTPA.iTj2pQdaZB-5olCBts3oP4yDYDI")
+            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.XpmTPA.ngsmAJUIz0522szXi67sNuzOmEM")
                 .addEventListeners(handler)
                 .build();
 
@@ -36,6 +36,12 @@ class Main extends ListenerAdapter {
 
     	handler.addCommand("!hello", (event, jobsq, sendq) -> {
             event.getChannel().sendMessage("Ei gude, wie?").queue();
+        });
+
+    	handler.addCommand("!meme", (event, jobsq, sendq) -> {
+    	    jobsq.add(new ApiRequest("https://meme-api.herokuapp.com/gimme", event.getChannel(), (obj) -> {
+    	        return obj.getString("url");
+            }));
         });
     }
 }
