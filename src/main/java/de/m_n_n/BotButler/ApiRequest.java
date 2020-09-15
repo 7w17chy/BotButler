@@ -15,6 +15,11 @@ public class ApiRequest {
 	private Parseable m_parser;
 	private MessageChannel m_channel;
 
+	@FunctionalInterface
+	public interface Parseable {
+		String parse(JSONObject obj);
+	}
+
 	ApiRequest(String url, MessageChannel channel, Parseable parser) {
 		try { m_req = new URL(url); }
 		catch (MalformedURLException e) {
@@ -34,42 +39,27 @@ public class ApiRequest {
 		String result = new String(bytes, StandardCharsets.UTF_8);
 		stream.close();
 
-		if (result == "" || result == null)
-			throw new IOException(result);
-
+		if (result == "" || result == null) throw new IOException(result);
 		return new JSONObject(result);
 	}
 
-	public ApiResponse executeRequest() {
-		String res = null;
+	private String parseJSON(JSONObject jobj) throws IOException {
+		JSONObject obj = apiRequest();
+		String res = m_parser.parse(obj);
+		return res;
+	}
+
+	public String requestAndParse() {
 		try {
-			JSONObject obj = apiRequest();
-			res = m_parser.parse(obj);
-		} catch (Exception e) {
+			JSONObject obj = this.apiRequest();
+			return this.parseJSON(obj);
+		} catch (IOException e) {
 			e.printStackTrace();
-			return new ApiResponse(m_channel, null);
 		}
-
-		return new ApiResponse(m_channel, res);
+		return null;
 	}
 
-	@FunctionalInterface
-	public interface Parseable {
-		public String parse(JSONObject obj);
-	}
-
-	public class ApiResponse extends Sendable {
-		private MessageChannel m_channel;
-		private String m_content;
-
-		ApiResponse(MessageChannel msgc, String content) {
-			m_channel = msgc;
-			m_content = content;
-		}
-
-		public String getSendableContent() {
-			return m_content;
-		}
-		public MessageChannel getMessageChannel() { return m_channel; }
+	public void sendToChannel(String message) {
+		m_channel.sendMessage(message).queue();
 	}
 }
