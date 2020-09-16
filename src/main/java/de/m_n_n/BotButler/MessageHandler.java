@@ -3,6 +3,9 @@ package de.m_n_n.BotButler;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+//import java.io.IOException;
+//import java.text.SimpleDateFormat;
+//import java.util.Date;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -70,7 +73,6 @@ public class MessageHandler extends ListenerAdapter {
                         String ret = null;
                         try {
                             ret = obj.getString("postLink");
-                            System.out.println("Got object: " + ret);
                         } catch (Exception e) {
                             e.printStackTrace();
                             ret = "Klitzekleiner Fehler beim Parsen der Server-Response. Nicht deine Schuld. Sag bitte mal Max bescheid :)";
@@ -86,6 +88,44 @@ public class MessageHandler extends ListenerAdapter {
             case "!hello":
             	event.getChannel().sendMessage("Gude!").queue();
             	break;
+            case "!witz":
+                try { m_mutex.acquire(); } catch (InterruptedException e) { e.printStackTrace(); }
+                m_futQueue.add(m_executor.submit(() -> {
+                    ApiRequest req = new ApiRequest("https://official-joke-api.appspot.com/random_joke", event.getChannel(), (obj) -> {
+                        String ret = null;
+                        try {
+                            //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd-hh-mm-ss.Z");
+                            //Date publication_date = format.parse(obj.getString("appeared_at"));
+                            ret = obj.getString("setup") + "\n" + obj.getString("punchline");
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            ret = "Klitzekleiner Fehler beim Parsen der Server-Response. Nicht deine Schuld. Sag bitte mal Max bescheid :)";
+                        }
+                        return ret;
+                    });
+                    String result = req.requestAndParse();
+                    req.sendToChannel(result);
+                }));
+                m_mutex.release();
+                break;
+            case "!trump":
+                try { m_mutex.acquire(); } catch (InterruptedException e) { e.printStackTrace(); }
+                m_futQueue.add(m_executor.submit(() -> {
+                    ApiRequest req = new ApiRequest("http://tronalddump.io/random/quote", event.getChannel(), (obj) -> {
+                        String ret = null;
+                        try {
+                            ret = "Tump hat einmal gesagt: " + "\"" + obj.getString("value") + "\"";
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            ret = "Klitzekleiner Fehler beim Parsen der Server-Response. Nicht deine Schuld. Sag bitte mal Max bescheid :)";
+                        }
+                        return ret;
+                    });
+                    String result = req.requestAndParse();
+                    req.sendToChannel(result);
+                }));
+                m_mutex.release();
+                break;
             default:
                 if (message_content.startsWith("!"))
                     event.getChannel().sendMessage("\""+ message_content + "\"enn' ich noch nicht...").queue();
