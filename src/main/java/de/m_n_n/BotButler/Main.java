@@ -8,7 +8,7 @@ class Main extends ListenerAdapter {
     public static void main(String[] args) {
 
     	try {
-            JDA jda = new JDABuilder("NzAwNjY5NDA1MjMwNzkyNzc1.XpmTPA.5r1jPTXBuP4ddizmv98RhOYJan8")
+            JDA jda = new JDABuilder("")
                 .addEventListeners(new MessageHandler())
                 .build();
 
