@@ -94,8 +94,8 @@ public class MessageHandler extends ListenerAdapter {
                     ApiRequest req = new ApiRequest("https://official-joke-api.appspot.com/random_joke", event.getChannel(), (obj) -> {
                         String ret = null;
                         try {
-                            //SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd-hh-mm-ss.Z");
-                            //Date publication_date = format.parse(obj.getString("appeared_at"));
+                            // SimpleDateFormat format = new SimpleDateFormat("YYYY-MM-dd-hh-mm-ss.Z");
+                            // Date publication_date = format.parse(obj.getString("appeared_at"));
                             ret = obj.getString("setup") + "\n" + obj.getString("punchline");
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -126,9 +126,27 @@ public class MessageHandler extends ListenerAdapter {
                 }));
                 m_mutex.release();
                 break;
+            case "!insult":
+                try { m_mutex.acquire(); } catch (InterruptedException e) { e.printStackTrace(); }
+                m_futQueue.add(m_executor.submit(() -> {
+                    ApiRequest request = new ApiRequest(("https://evilinsult.com/generate_insult.php?lang=en&type=json"), event.getChannel(), (obj) -> {
+                       String ret = null;
+                       try {
+                           ret = obj.getString("insult");
+                       } catch (Error e) {
+                           e.printStackTrace();
+                           ret = "Klitzekleiner Fehler beim Parsen der Server-Response. Nicht deine Schuld. Sag bitte mal Max bescheid :)";
+                       }
+                       return ret;
+                    });
+                    String result = request.requestAndParse();
+                    request.sendToChannel(result);
+                }));
+                m_mutex.release();
+                break;
             default:
                 if (message_content.startsWith("!"))
-                    event.getChannel().sendMessage("\""+ message_content + "\"enn' ich noch nicht...").queue();
+                    event.getChannel().sendMessage("\""+ message_content + "\" kenn' ich noch nicht...").queue();
         }
     }
 }
