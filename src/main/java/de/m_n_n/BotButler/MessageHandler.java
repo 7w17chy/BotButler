@@ -19,6 +19,7 @@ public class MessageHandler extends ListenerAdapter {
     private Queue<Future<?>> m_futQueue;
     private Semaphore m_mutex;
     public QueueChecker m_checker;
+    private String m_prefix;
 
     private class QueueChecker extends Thread {
         private Queue<Future<?>> m_futures;
@@ -50,20 +51,22 @@ public class MessageHandler extends ListenerAdapter {
         }
     }
 
-	MessageHandler() {
+	MessageHandler(Configuration config) {
         m_executor = Executors.newCachedThreadPool();
         // let's use a linked list...
         m_futQueue = new LinkedList<Future<?>>();
         m_mutex = new Semaphore(1);
         m_checker = new QueueChecker(m_mutex, m_futQueue);
+        m_prefix = config.prefix;
         m_checker.start();
 	}
-	
+
+	// TODO: bot prefix verwurschteln
 	@Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String message_content = event.getMessage().getContentRaw();
         // do nothing if message's content is not a command
-        if (!message_content.startsWith("!")) return;
+        if (!message_content.startsWith(m_prefix)) return;
         
         switch (message_content) {
             case "!meme":
